@@ -27,6 +27,8 @@ jobs:
         run: poetry install
 
       - name: Generate Documentation
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
           poetry run pdoc src/dumper -o docs/output -t docs/templates/default
 
