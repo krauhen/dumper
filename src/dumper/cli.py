@@ -9,6 +9,9 @@ import os
 import sys
 
 from pathlib import Path
+
+from pydantic import SecretStr
+
 from .core import dump_tree, dump_files, DEFAULT_IGNORE_PATTERNS
 from .settings import get_settings
 
@@ -68,9 +71,8 @@ CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"], max_content_width=18
 @click.option(
     "--openai-api-key",
     hide_input=True,
-    default=settings.openai_api_key
-    if settings.openai_api_key
-    else os.environ.get("OPENAI_API_KEY", ""),
+    default=None,
+    show_default=True,
     help="OpenAI API key. Prompt is hidden for security.",
 )
 @click.option(
@@ -93,18 +95,30 @@ def main(
 ):
     """Dumps directory structure and file contents with optional AI summarization.
 
-    Args:
-        root (Path): The root directory to dump.
-        recursive (bool): Whether to recurse subdirectories.
-        tree_depth (int): The depth to print the directory tree.
-        add_ignore_list (list of str): Extra patterns to ignore.
-        remove_ignore_list (list of str): Patterns to remove from the ignore list.
-        only_tree (bool): If true, only print the directory tree and exit.
-        sum_up_files (bool): If true, summarize file contents using AI.
-        model_name (str): The name of the model for summarization.
-        openai_api_key (str): API key for OpenAI services.
-        verbose (int): The verbosity level of output.
+    Args:\n
+        root (Path): The root directory to dump.\n
+        recursive (bool): Whether to recurse subdirectories.\n
+        tree_depth (int): The depth to print the directory tree.\n
+        add_ignore_list (list of str): Extra patterns to ignore.\n
+        remove_ignore_list (list of str): Patterns to remove from the ignore list.\n
+        only_tree (bool): If true, only print the directory tree and exit.\n
+        sum_up_files (bool): If true, summarize file contents using AI.\n
+        model_name (str): The name of the model for summarization.\n
+        openai_api_key (str): API key for OpenAI services.\n
+        verbose (int): The verbosity level of output.\n
     """
+    if openai_api_key and sum_up_files:
+        print(f"Provided OpenAI API key is: {SecretStr(openai_api_key)}")
+    elif settings.openai_api_key and sum_up_files:
+        openai_api_key = settings.openai_api_key
+        print(f"Settings OpenAI API key is: {SecretStr(openai_api_key)}")
+    elif os.environ.get("OPENAI_API_KEY", None) and sum_up_files:
+        openai_api_key = os.environ["OPENAI_API_KEY"]
+        print(f"Environment OpenAI API key is: {SecretStr(openai_api_key)}.")
+    else:
+        raise Exception(
+            "If you want to sum up file contents, you need to specify an OpenAI API key."
+        )
 
     ignore_patterns = list(DEFAULT_IGNORE_PATTERNS)
     ignore_patterns.extend(add_ignore_list)
