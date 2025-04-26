@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "dumper"
+version = "1.0.0"
+description = "An APP to make a dorectory dump."
+authors = ["Henning Krause <henning.krause90@gmail.com>"]
+packages = [{ include = "dumper", from = "src" }]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.11,<3.14"
+click = "^8.1.3"
+openai = "^1.76.0"
+pydantic-settings = "^2.9.1"
+pdoc = "^15.0.3"
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.11.7"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+dumper = "dumper.cli:main"
