@@ -12,11 +12,12 @@ import os
 from itertools import chain
 from pathlib import Path
 from typing import List, Optional, Iterable
-from dumper.config import (
+from .config import (
     PYTHON_IGNORE_PATTERNS,
     NODE_IGNORE_PATTERNS,
     GIT_IGNORE_PATTERNS,
     INTELLIJ_IGNORE_PATTERNS,
+    GENERAL_IGNORE_PATTERNS
 )
 
 
@@ -25,6 +26,7 @@ DEFAULT_IGNORE_PATTERNS: List[str] = [
     *NODE_IGNORE_PATTERNS,
     *GIT_IGNORE_PATTERNS,
     *INTELLIJ_IGNORE_PATTERNS,
+    *GENERAL_IGNORE_PATTERNS
 ]
 
 
@@ -38,7 +40,15 @@ def is_ignored(path: Path, ignore_patterns: List[str]) -> bool:
     Returns:
         bool: True if the path matches any ignore pattern, False otherwise.
     """
-    match = any(part in ignore_patterns for part in path.parts)
+    parts = []
+    for part in path.parts:
+        sub_parts = []
+        for pattern in ignore_patterns:
+            match = pattern in part
+            sub_parts.append(match)
+        match = any(sub_parts)
+        parts.append(match)
+    match = any(parts)
     return match
 
 

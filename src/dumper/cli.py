@@ -107,7 +107,9 @@ def main(
         openai_api_key (str): API key for OpenAI services.\n
         verbose (int): The verbosity level of output.\n
     """
-    if openai_api_key and sum_up_files:
+    if not sum_up_files:
+        ...
+    elif openai_api_key and sum_up_files:
         print(f"Provided OpenAI API key is: {SecretStr(openai_api_key)}")
     elif settings.openai_api_key and sum_up_files:
         openai_api_key = settings.openai_api_key

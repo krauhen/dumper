@@ -53,3 +53,11 @@ GIT_IGNORE_PATTERNS: List[str] = [
 ]
 
 INTELLIJ_IGNORE_PATTERNS: List[str] = [".idea"]
+
+GENERAL_IGNORE_PATTERNS: List[str] = [
+    ".pdf",
+    ".doxc",
+    ".xlsx",
+    ".pem",
+    ".pyc",
+]
